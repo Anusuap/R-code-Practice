@@ -1,1 +1,98 @@
+# WORKSHEET 7 
+
+# loading all the necessary packages
+
+install.packages("tidyverse")
+install.packages("rvest")
+library(tidyverse)
+library(rvest)
+library(dplyr)
+
+# loading the data
+
+html=read_html("https://www.relianceiccrankings.com/ranking/womenodi/batting/")
+my.tibble=html_table(html)
+my.table=my.tibble[[1]]
+
+# loading the data on country
+
+country=html%>%html_elements("td img")%>%html_attr("alt")
+
+# Q 1
+
+# putting the column of country in my.table
+
+my.table[4]=country
+colnames(my.table)[4]="Country"
+colnames(my.table)[1]="Rank"
+
+# creating the clean data frame
+
+clean.table=data.frame(Rank=my.table$Rank,
+                       Rating=my.table$Rating,
+                       Name=my.table$Name,
+                       Country=my.table$Country)
+
+# Q 2
+
+# saving the dataset in the tibble format
+
+batting=as.tibble(clean.table)
+
+# Q 5
+
+# grouping
+
+by_cyl=mtcars%>%group_by(cyl)
+
+# summarising
+
+req.table=by_cyl%>%summarise(avg.hp=mean(hp),avg.disp=mean(disp))
+
+# Q 6
+
+# ranking of all Indian players
+
+India=batting%>%filter(Country=="IND")
+Rank_India=India$Rank
+
+# finding the number of players from each group
+
+team=batting%>%group_by(Country)%>%summarise(n=n())
+colnames(team)[2]="no_of_players"
+no_of_players_group=team
+
+# to find the avarage ranking of each team
+
+team_group=batting%>%group_by(Country)%>%summarise(avg.rank=mean(Rank))%>%arrange(desc(avg.rank))
+
+
+# Q 7
+
+foo=function(team)
+{
+  cont=numeric(length=length(team))
+  for(i in 1:length(team))
+  {
+    if(sum(team[i] == c("SL", "IND", "PAK", "THA", "BAN"))>0)
+       {
+         cont[i]="Asia"
+    }else{
+         cont[i]="Not Asia"
+    }
+    
+  }
+  return(cont)
+}
+Continent=foo(batting$Country)
+batting=batting%>%mutate(Continent=Continent)
+
+# counting how many Asia player
+
+asia_count=batting%>%group_by(Continent)%>%summarise(n=n())
+asia_count
+
+# avarage rating of asia vs non asia players
+
+avg_rating=batting%>%group_by(Continent)%>%summarise(avg.rate=mean(Rating))
 
