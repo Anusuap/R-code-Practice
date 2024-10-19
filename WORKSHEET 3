@@ -1,1 +1,57 @@
+# Worksheet 3
+
+# Q 2a
+sample_2a=sample(c("red","green","blue"),size=1,prob=c(3,2,2))
+sample_2a
+# Q 2b
+A <- matrix(c(3, 1, -2, 4, 5, 3, -1, 2, -2), nrow = 3, ncol = 3)
+sample_2b=sample(c("col 1","col 2","col 3"),size=1,prob=c(norm(A[,1],"2"),norm(A[,2],"2"),norm(A[,3],"2")))
+sample_2b
+# Q 2c
+runif(0,5,n=1)
+# Q 3a
+exceed <- function()
+{
+  count <- 0
+  sum=0
+  while(sum<=1)
+  {
+    sum=sum+runif(0,1,n=1)
+    count=count+1
+  }
+  return(count)
+}
+exceed()
+# Q 3b
+store <- numeric(length = 1000)
+for(r in 1:1000)
+{
+  store[r] <-exceed()
+}
+# Q 3c
+exp_estimated=mean(store)
+exp_estimated # almost equal to exp(1)
+# Q 4a
+attempt=function(age)
+{
+  count=0
+  remain=age
+  for(i in 1:remain)
+  {
+    my_sample=sample(1:remain,size=1)
+    remain=remain-my_sample
+    count=count+1
+    if(remain==0) break
+  }
+  return(count)
+}
+attempt(25)
+# Q 4b
+store <- numeric(length = 1000)
+for(r in 1:1000)
+{
+  store[r] <-attempt(25)
+}
+# Q 4c
+mean(store)
 
