@@ -1,0 +1,52 @@
+# Worksheet 6
+# packages and libraries
+install.packages("tidyverse")
+install.packages("rvest")
+library("tidyverse")
+library("rvest")
+# Q1
+post_docs=read_html("https://www.iitk.ac.in/math/visitors-post-doctoral-fellow")%>%html_elements(".col-md-6.border-bottom.mb-3 b")%>%html_text()
+post_docs
+# Q2
+html=read_html("https://editorial.rottentomatoes.com/guide/best-netflix-movies-to-watch-right-now/")
+# Ranking
+ranking=html%>%html_elements(".countdown-index-resposive")%>%html_text()
+ranking=as.numeric(gsub("#","",ranking))
+ranking
+# Movie name 
+name=html%>%html_elements(".article_movie_title a")%>%html_text()
+name
+# Tomato % score
+tomato.score=html%>%html_elements(".tMeterScore")%>%html_text()
+tomato.score=as.numeric(gsub("%","",tomato.score))
+tomato.score
+# Year of the movie
+year=html%>%html_elements(".subtle.start-year")%>%html_text()
+year=as.numeric(substr(year,2,5))
+# Directors
+dirs=html%>%html_elements(".info.director")
+all_dirs=sapply(dirs,function(a) a%>%html_elements("a")%>%html_text())
+all_dir=sapply(all_dirs,paste,collapse=",")
+all_dir
+# making the final data frame
+netflix_movies <- data.frame("Ranking"=ranking,
+                             "Name"=name,
+                             "Tomato Score"=tomato.score,
+                             "Year"=year,
+                             "Directors"=all_dir)
+netflix_movies
+# Q3
+html=read_html("https://www.espn.com/tenis/rankings/_/tipo/wta")
+tabless=html_table(html)
+my_table=tabless[[1]]
+my_table
+rank=my_table$RK
+name=my_table$NAME
+points=my_table$POINTS
+points=as.numeric(gsub(",","",points))
+age=my_table$AGE
+clean.table=data.frame("Rank"=rank,
+                       "Name"=name,
+                       "Points"=points,
+                       "Age"=age)
+clean.table
