@@ -1,0 +1,88 @@
+# Worksheet 5
+
+# packages and libraries
+install.packages("rbenchmark")
+library("rbenchmark")
+# Q1
+attempts<-function(age)
+{
+  count <- 0
+  remain <- age # age no. of candles remain in the beginning
+  while(remain>0)
+  {
+    count<-count+1# randomly choose any number between 1 and remain
+    blow_out <- sample(1:remain,size =1)
+    remain <- remain- blow_out
+  }
+  return(count)
+}
+att_vec <- numeric(length =1e3)
+for(i in 1:1e3)
+{
+  att_vec[i]<-attempts(25)
+}
+replicate(1e3,attempts(25))
+# Q2
+benchmark({
+  att_vec <- numeric(length =1e3)
+  for(i in 1:1e3)
+  {
+    att_vec[i]<-attempts(25)
+  }},replicate(1e3,attempts(25)),replications=100)
+# Q3
+benchmark({
+  att_vec <- numeric(length =1e4)
+  for(i in 1:1e4)
+  {
+    att_vec[i]<-attempts(25)
+  }},replicate(1e4,attempts(25)),replications=20)
+# Q4
+att_vec=NULL
+for(i in 1:1e4)
+{
+  att_vec=c(att_vec,attempts(25))
+}
+benchmark({
+  att_vec <- numeric(length =1e4)
+  for(i in 1:1e4)
+  {
+    att_vec[i]<-attempts(25)
+  }},replicate(1e4,attempts(25)),
+  {
+    att_vec=NULL
+    for(i in 1:1e4)
+    {
+      att_vec=c(att_vec,attempts(25))
+    }},replications=25)
+# Q5
+A=matrix(runif(0,1,n=1),nrow=1e3,ncol=1e4)
+benchmark(colMeans(A),apply(A,2,mean),replications=100)
+M=matrix(runif(0,1,n=1),nrow=1e4,ncol=1e3)
+benchmark(colMeans(M),apply(M,2,mean),replications=1000)
+# apply function is always slower than colMeans
+# Q6
+benchmark({vec=NULL
+for(i in 1:1e4)
+{
+  vec=c(vec,runif(0,1,1))
+}},vec=runif(0,1,n=1e4),replications=100)
+# drawing no one at a time is faster
+# Q7
+# 8 bytes memory for a single number
+# case of vector 48 bytes extra
+num1 <- numeric(length = 1e3)
+num2 <- numeric(length = 1e6)
+
+object.size(num1)
+object.size(num2)
+
+# case of matrix 216 bytes extra
+mat1 <- matrix(runif(100*1000), nrow = 100, ncol = 1000)
+mat2 <- matrix(0, nrow = 100, ncol = 1000)
+
+object.size(mat1)
+object.size(mat2)
+
+# case of array 224 bytes extra
+arr <- array(0, dim = c(100,100,100))
+object.size(arr)
