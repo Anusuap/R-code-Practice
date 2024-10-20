@@ -1,0 +1,56 @@
+# Worksheet 8
+# packages and libraries
+install.packages("dplyr")
+library("dplyr")
+# Q1
+html=read_html("https://www.relianceiccrankings.com/ranking/womenodi/batting/")
+tabless=html_table(html)
+my_table=tabless[[1]]
+# country
+country=html%>%html_elements("td img")%>%html_attr("alt")
+country
+# changeing the name of the first column of my_table
+colnames(my_table)[1]="Ranking"
+# final data frame
+clean.table=data.frame("Ranking"=my_table$Ranking,
+                       "Rating"=my_table$Rating,
+                       "Name"=my_table$Name,
+                       "Country"=country)
+clean.table
+# Q2
+batting=as.tibble(clean.table)
+# Q4
+head(mtcars)
+names(mtcars)
+# Q5
+mtcars%>%group_by(cyl)%>%summarise(mean_hp=mean(hp),mean_disp=mean(disp))
+# Q6
+# a
+rank_IND=clean.table%>%filter(Country=="IND")
+rank_IND=rank_IND$Ranking
+# b
+clean.table%>%group_by(Country)%>%summarise(n=n())
+# c
+clean.table%>%group_by(Country)%>%summarise(mean_ranking=mean(Ranking))
+# d
+clean.table%>%group_by(Country)%>%summarise(mean_ranking=mean(Ranking))%>%arrange(desc(mean_ranking))
+# 7a
+# hint for this question c("SL", "IND", "PAK", "THA", "BAN")==Asian countries
+team=clean.table$Country
+team
+continent=numeric(length=length(team))
+for(i in 1:length(team))
+    {
+      if(sum(team[i]==c("SL", "IND", "PAK", "THA", "BAN"))>0)
+      {
+        continent[i]="Asia"
+      }else{
+        continent[i]="Not Asia"
+      }
+}
+clean.table=clean.table%>%mutate("Continent"=continent)
+clean.table%>%group_by(Continent)%>%summarise(n=n())
+# b
+clean.table%>%group_by(Continent)%>%summarise(mean=mean(Rating))
+
+                                              
