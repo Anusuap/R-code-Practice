@@ -1,0 +1,72 @@
+# packages and libraries
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("tidyverse")
+library("dplyr")
+library("ggplot2")
+library("tidyverse")
+
+# loading the data
+load("C:/Users/anusuap24/Downloads/Project.Rdata")
+
+# Exploratory Data Analysis
+head(data)
+dim(data)
+names(data)
+
+# Plot of votecount vs rating in imdb for each director
+
+votecount=data$Votecount
+votecount
+# using chatgpt 
+votecount.numeric=c(39000, 16000, 1300, 6900, 17000, 2900, 422, 1700, 1400, 7400, 5100, 1100, 1800, 2500, 5300, 1200, 
+                    1100, 2800, 3000, 255, 1900, 197, 1800, 1400, 2800, 4500, 862, 1600, 167, 1900, 621, 340, 
+                    3200, 2400, 4100, 1800, 113, 243, 628, 266, 3300, 303, 1400, 1400, 467, 13, 150, 121, 
+                    37, 12, 11, 100, 37, 592, 15, 355, 11, 323, 348, 120, 162, 102, 175, 47, 
+                    358, 148, 318, 220, 376, 257, 224, 589, 392, 464, 104, 542, 581, 617, 1900, 5200, 
+                    556, 734, 1200, 262, 490, 700, 158, 1000, 418, 603, 47, 213, 161, 76, 404, 547, 
+                    1700, 266, 389, 2600)
+rating=as.numeric(data$Rating)
+rating
+# plot
+theme_set(theme_grey())
+ggplot(data,aes(x=votecount.numeric,y=rating))+geom_point(aes(colour=Director),pch=19)+labs(title="Title : Votecount vs Rating in IMDB for movies of different directors",x="Votecount",y="Rating")
+
+# Barplot of avarage rating of movies in IMDB for each directors
+table1=data%>%group_by(Director)%>%summarise(avg_rating=mean(as.numeric(Rating)))
+table1
+ggplot(table1, aes(x = Director, y = avg_rating ,fill = Director)) +
+  geom_bar(stat = "identity",aes(colour=Director),width=0.4) +
+  labs(title = "Bar Plot", x = "Direction", y = "Values")+
+  labs(title="Title : Average Ratings of Movies Directed by the Directors in IMDB",x="Name of Director",y="Avarage Rating")
+# Directors vs number of films they made on genere
+Drama=data%>%filter(Genere=="Tragedy")%>%group_by(Director)%>%summarise(drama=n())
+Drama
+tragedy=data%>%group_by(Director)%>%summarise(t=sum(Genere=sapply(Genere,sum(Genere=="Tragedy"))))
+tragedy
+data
+thriller_count <- data %>%
+  filter(Director == "Satyajit Ray" & grepl("Thriller", Genere)) %>%
+  nrow()
+thriller_counts
+thriller_counts <- data %>%
+  filter(grepl("", Genere)) %>%
+  group_by(Director) %>%
+  summarise(Thriller_Count = n())
+data$Genere
+
+
+
+
+
+
+genre_count <- data%>%
+  # Split the genre column into multiple rows
+  separate_rows(Genere, sep = ", ") %>%
+  # Group by director and genre
+  group_by(Director, Genere) %>%
+  # Count the number of movies
+  summarise(Movie_Count = n()) %>%
+  # Ungroup for better formatting
+  ungroup()
+genre_count
